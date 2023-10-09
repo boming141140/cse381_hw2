@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
 #include "BallSpawner.h"
+#include "GameFramework/Actor.h"
 #include "BallGameMode.generated.h"
 /**
  * 
@@ -19,5 +20,5 @@ public:
 	ABallGameMode();
 	UBallSpawner* BallSpawnerInstance;
 	virtual void BeginPlay() override;
-
+	void CheckAndPrintActorName(UObject* PotentialSubobject);
 };
