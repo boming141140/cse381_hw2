@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BallClass.generated.h"
 
+
 UCLASS()
 class HW1_API ABallClass : public AActor
 {

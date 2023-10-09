@@ -26,6 +26,7 @@ public:
 	UPhysicalMaterial* BouncyMaterial;
 	FVector ChuteLocation;
 	UPhysicalMaterial* PhysicalMaterial;
+	FTimerHandle SpawnTimerHandle;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -34,8 +35,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	FTimerHandle SpawnTimerHandle;
-
 	// Function to spawn the ball
 	void SpawnBall();
 	
