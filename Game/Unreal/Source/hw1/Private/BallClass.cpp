@@ -2,7 +2,6 @@
 
 
 #include "BallClass.h"
-#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 ABallClass::ABallClass()
@@ -18,7 +17,7 @@ ABallClass::ABallClass()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Shape_Sphere is not found!"));
 	}
-	UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetMobility(EComponentMobility::Movable);
 	MeshComponent->SetStaticMesh(SphereMesh);
 
@@ -32,7 +31,8 @@ ABallClass::ABallClass()
 void ABallClass::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	MeshComponent->OnComponentHit.AddDynamic(this, &ABallClass::OnHit);
 }
 
 // Called every frame
@@ -62,5 +62,13 @@ void ABallClass::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		}
 		*/
 	//}
+    // Check if the other actor is the player and if the player can pick up the ball
+	AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
+	if (Player)
+	{
+		Player->AttemptPickup(this);
+		// You can destroy the ball or set it to invisible after it's picked up
+		this->Destroy();
+	}
 }
 

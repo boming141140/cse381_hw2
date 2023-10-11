@@ -5,17 +5,16 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PickupComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BallClass.h"
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	// Adjust the capsule component properties if necessary
-	GetCapsuleComponent()->InitCapsuleSize(34.0f, 88.0f); // Adjust the radius and height as necessary
 	// Create a static mesh component
 	UStaticMeshComponent* CharacterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CharacterMesh"));
-	CharacterMesh->SetupAttachment(RootComponent); // Attach the mesh to the root component (CapsuleComponent)
 	CharacterMesh->SetRelativeLocation(FVector(0, 0, -88));
 
 	// Load a mesh. Note: Replace 'PathToYourMesh' with the actual path to your mesh.
@@ -28,6 +27,7 @@ AMyCharacter::AMyCharacter()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("mesh not found"));
 	}
+	CharacterMesh->SetupAttachment(RootComponent); // Attach the mesh to the root component (CapsuleComponent)
 
 	// Instantiating your class Components
 
@@ -46,6 +46,9 @@ AMyCharacter::AMyCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	GetCharacterMovement()->bIgnoreBaseRotation = true;
+
+	//Initialize PickupComponent
+	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -107,3 +110,11 @@ void AMyCharacter::MoveRight(float AxisValue)
 	}
 }
 
+void AMyCharacter::AttemptPickup(ABallClass* BallToPickup)
+{
+	if (PickupComponent && BallToPickup)
+	{
+		PickupComponent->PickupBall(BallToPickup);
+		// You can implement further logic here, e.g. add points to the player
+	}
+}

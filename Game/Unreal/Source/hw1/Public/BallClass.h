@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "MyCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include "BallClass.generated.h"
 
 
@@ -19,6 +21,7 @@ public:
 	AActor* owner;
 	// Meshes
 	UStaticMesh* SphereMesh;
+	UStaticMeshComponent* MeshComponent;
 
 protected:
 	// Called when the game starts or when spawned

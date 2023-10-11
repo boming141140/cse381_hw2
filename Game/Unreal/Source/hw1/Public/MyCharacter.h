@@ -39,4 +39,10 @@ public:
 	//called for left/right side input
 
 	void MoveRight(float InputAxis);
+
+	void AttemptPickup(ABallClass* BallToPickup);
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pickup, meta = (AllowPrivateAccess = "true"))
+	class UPickupComponent* PickupComponent;
 };
