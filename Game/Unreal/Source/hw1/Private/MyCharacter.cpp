@@ -8,13 +8,17 @@
 #include "PickupComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BallClass.h"
+#include "Engine/Engine.h"
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	// Adjust the capsule component properties if necessary
+	GetCapsuleComponent()->InitCapsuleSize(34.0f, 88.0f); 
 	// Create a static mesh component
 	UStaticMeshComponent* CharacterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CharacterMesh"));
+	CharacterMesh->SetupAttachment(RootComponent); // Attach the mesh to the root component (CapsuleComponent)
 	CharacterMesh->SetRelativeLocation(FVector(0, 0, -88));
 
 	// Load a mesh. Note: Replace 'PathToYourMesh' with the actual path to your mesh.
@@ -27,44 +31,40 @@ AMyCharacter::AMyCharacter()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("mesh not found"));
 	}
-	CharacterMesh->SetupAttachment(RootComponent); // Attach the mesh to the root component (CapsuleComponent)
 
 	// Instantiating your class Components
+
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-
-	//Set the location and rotation of the Character Mesh Transform
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
-
 	// Attaching your class Components to the default character's Skeletal Mesh Component.
+
 	CameraComp->SetupAttachment(RootComponent);
 
-	// Setup the collision for the character's capsule component
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 
-	// Assuming that your CharacterMesh is meant to also interact with objects, set its collision as well
-	CharacterMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CharacterMesh->SetNotifyRigidBodyCollision(true);
+	//Setting class variables of the Character movement component
 
-	// Optional: If you want more detailed control over what the capsule and mesh collide with,
-	// you can set the collision profiles here. E.g.,
-	// GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
-	// CharacterMesh->SetCollisionProfileName(TEXT("Pawn"));
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	//Initialize PickupComponent
-	//PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
+	GetCharacterMovement()->bIgnoreBaseRotation = true;
+
+	// A ball holder
+
+	hasBall = false;
+	ActualBall = nullptr;
+	HealthPoints = 10;
+
+	//Set meshComponent for ball holder
+	MeshComponentForCharacter = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponentForCharacter"));
+	MeshComponentForCharacter->SetupAttachment(RootComponent);
+
+	bUseControllerRotationPitch = true;
+	bUseControllerRotationYaw = true;
+	bUseControllerRotationRoll = false; 
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnPlayerOverlapBegin);
-	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 
 }
 
@@ -83,11 +83,54 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMyCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AMyCharacter::PitchInput);
 	// Bind jump functions
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	// Shoot Ball
+	PlayerInputComponent->BindAction("ShootBall", IE_Pressed, this, &AMyCharacter::HandleShootBall);
+}
+
+void AMyCharacter::PitchInput(float val) 
+{
+	if (CameraComp)
+	{
+		FRotator NewRotation = CameraComp->GetRelativeRotation();
+		NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch - val, -80.0f, 80.0f);  // Clamping to avoid full rotation
+		CameraComp->SetRelativeRotation(NewRotation);
+	}
+}
+
+void AMyCharacter::HandleShootBall()
+{
+	UE_LOG(LogTemp, Warning, TEXT("shooted"));
+	if (hasBall && ActualBall)
+	{
+		FVector ThrowPosition = this->GetActorLocation() + (CameraComp->GetForwardVector() * 200);
+		ActualBall->SetActorHiddenInGame(false);
+		ActualBall->SetActorEnableCollision(true);
+		ActualBall->SetActorLocation(ThrowPosition);
+		ActualBall->SetActorRotation(CameraComp->GetComponentRotation());
+		ActualBall->MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		// Call your shooting function
+		ShootBallInScreenCenterDirection(ActualBall->MeshComponent, GetWorld()->GetFirstPlayerController(), GetWorld());
+		hasBall = false; // Assuming the ball is "used up" after shooting
+		MeshComponentForCharacter->SetStaticMesh(nullptr);
+		ActualBall = nullptr;
+	}
+}
+
+void AMyCharacter::GetBall(ABallClass* ball)
+{
+	ActualBall = ball;
+	MeshComponentForCharacter->SetStaticMesh(ball->MeshComponent->GetStaticMesh());
+	OriginalScale = ball->MeshComponent->GetComponentScale();
+	MeshComponentForCharacter->SetRelativeScale3D(FVector(0.2f));
+	MeshComponentForCharacter->SetRelativeLocation(FVector(30, 20, -10));
+	ActualBall->SetActorHiddenInGame(true);
+	ActualBall->SetActorEnableCollision(false);
 }
 
 void AMyCharacter::MoveForward(float AxisValue)
@@ -120,38 +163,24 @@ void AMyCharacter::MoveRight(float AxisValue)
 	}
 }
 
-void AMyCharacter::AttemptPickup(AActor* BallToPickup)
+void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball, APlayerController* PlayerController, UWorld* WorldContext)
 {
-	// Log that we entered the function
-	UE_LOG(LogTemp, Warning, TEXT("AttemptPickup called."));
-
-	// Check if the player is already holding a ball
-	if (HeldBall)
-	{
-		// Log that the player is already holding a ball
-		UE_LOG(LogTemp, Warning, TEXT("Player is already holding a ball."));
+	if (!Ball || !WorldContext)
 		return;
-	}
-    HeldBall = Cast<ABallClass>(BallToPickup);
 
-    // Optional: Make the ball a child of the character so it moves with the character
-    BallToPickup->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-
-    // Optional: Set the ball invisible or change its position to indicate it's being held
-    // For example, if it's a static mesh:
-    UStaticMeshComponent* BallMesh = BallToPickup->FindComponentByClass<UStaticMeshComponent>();
-    if (BallMesh)
-    {
-        BallMesh->SetVisibility(false);
-    }
-}
-
-void AMyCharacter::OnPlayerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// Check if the other actor is a ball
-	ABallClass* Ball = Cast<ABallClass>(OtherActor);
-	if (Ball)
+	FVector ShootDirection;
+	if (CameraComp)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Player overlapped with ball!"));
+		// Get the forward vector of the camera component
+		ShootDirection = CameraComp->GetForwardVector().GetSafeNormal();;
+	}
+	if (Ball->IsSimulatingPhysics())
+	{
+		float ForceMagnitude = 1000.0f; // adjust as needed
+		Ball->AddForce(ShootDirection * ForceMagnitude);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("no physics find"));
 	}
 }
