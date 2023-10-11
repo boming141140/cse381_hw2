@@ -21,4 +21,5 @@ public:
 	UBallSpawner* BallSpawnerInstance;
 	virtual void BeginPlay() override;
 	void CheckAndPrintActorName(UObject* PotentialSubobject);
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 };

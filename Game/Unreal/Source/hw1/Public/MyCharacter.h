@@ -39,4 +39,15 @@ public:
 	//called for left/right side input
 
 	void MoveRight(float InputAxis);
+	
+	void AttemptPickup(AActor* BallToPickup);
+
+	UFUNCTION()
+	void OnPlayerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+private:
+	class ABallClass* HeldBall;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pickup, meta = (AllowPrivateAccess = "true"))
+	class UPickupComponent* PickupComponent;
 };
