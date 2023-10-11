@@ -4,13 +4,17 @@
 #include "BallGameMode.h"
 #include "BallSpawner.h"
 #include "MyCharacter.h"
+#include "MyHUD.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerStart.h"
 
 
 ABallGameMode::ABallGameMode()
 {
     BallSpawnerInstance = CreateDefaultSubobject<UBallSpawner>(TEXT("BallSpawnerInstance"));
     DefaultPawnClass = AMyCharacter::StaticClass();
+    HUDClass = AMyHUD::StaticClass();
 }
 
 void ABallGameMode::BeginPlay()
@@ -19,7 +23,16 @@ void ABallGameMode::BeginPlay()
     UE_LOG(LogTemp, Warning, TEXT("Using GameMode: %s"), *this->GetName());
     UE_LOG(LogTemp, Warning, TEXT("Default Pawn Class: %s"), *DefaultPawnClass->GetName());
     CheckAndPrintActorName(BallSpawnerInstance);
-    
+
+    // Cast the default HUD to your custom HUD class
+    AMyHUD* GameHUD = Cast<AMyHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+    if (GameHUD)
+    {
+        // Example: set initial health and score values
+        GameHUD->SetHealth(3);
+        GameHUD->SetScore(0);
+    }
 }
 
 void ABallGameMode::CheckAndPrintActorName(UObject* PotentialSubobject)
@@ -52,6 +65,14 @@ void ABallGameMode::CheckAndPrintActorName(UObject* PotentialSubobject)
 
     // If we reach here, the UObject is not a subobject of any actor.
     UE_LOG(LogTemp, Warning, TEXT("The object is not a subobject of any actor."));
+}
+
+AActor* ABallGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+    //FVector SpawnLocation(11785, 19467, 170);  // Replace with your coordinates
+    FVector SpawnLocation(19385, 19467, 170);  // Temp spawn to start next to ball spawner
+    FRotator SpawnRotation(0.f, 0.f, 0.f);
+    return GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), SpawnLocation, SpawnRotation);
 }
 
 

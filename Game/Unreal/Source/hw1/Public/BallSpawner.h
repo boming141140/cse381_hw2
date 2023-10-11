@@ -22,10 +22,9 @@ public:
 	int32 MaxRepetitions = 30;
 
 	// Meshes
-	UStaticMesh* SphereMesh;
 	UPhysicalMaterial* BouncyMaterial;
 	FVector ChuteLocation;
-	UPhysicalMaterial* PhysicalMaterial;
+	
 	FTimerHandle SpawnTimerHandle;
 protected:
 	// Called when the game starts

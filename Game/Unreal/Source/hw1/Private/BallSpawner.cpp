@@ -6,7 +6,7 @@
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
 #include "BallClass.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
 
@@ -18,17 +18,6 @@ UBallSpawner::UBallSpawner()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> PhysicalMaterialObj(TEXT("PhysicalMaterial'/Game/StarterContent/Materials/Ballbounciness.Ballbounciness'"));
-
-	if (PhysicalMaterialObj.Succeeded())
-	{
-		PhysicalMaterial = PhysicalMaterialObj.Object;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Physical material not found!"));
-	}
 }
 
 
@@ -73,32 +62,26 @@ static void RetrieveChuteLocation(FVector& ChuteLocation, UWorld* World)
 void UBallSpawner::SpawnBall()
 {
 	//Spawn Ball
-	ABallClass* newBall = NewObject<ABallClass>();
 	FVector SpawnLocation = ChuteLocation;  
 	SpawnLocation.Z += 5.0f;
-	FRotator SpawnRotation = FRotator(0.f);     
-
-	AStaticMeshActor* SphereActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation);
-	if (SphereActor)
-	{
-		UStaticMeshComponent* MeshComp = SphereActor->GetStaticMeshComponent();
-		MeshComp->SetMobility(EComponentMobility::Movable);
-		MeshComp->SetStaticMesh(newBall->SphereMesh);
-		MeshComp->SetSimulatePhysics(true);
-		MeshComp->SetPhysMaterialOverride(PhysicalMaterial);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn the ball!"));
-	}
+	FRotator SpawnRotation = FRotator(0.f);
+	UWorld* CurrentWorld = GetWorld();
+	ABallClass* SpawnedActor = CurrentWorld->SpawnActor<ABallClass>(SpawnLocation, SpawnRotation);
 	
+
+	//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
 	// Increment the counter each time the timer function is called.
 	RepetitionCounter++;
 	if (RepetitionCounter >= MaxRepetitions)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
 	}
-	SpawnedActors.Add(newBall);
+	else
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
+		SpawnedActors.Add(SpawnedActor);
+	}
+
 }
 
 
@@ -109,4 +92,3 @@ void UBallSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	// ...
 }
-
