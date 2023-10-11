@@ -8,7 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerStart.h"
-#include "WolfieGuard1Spawner.h"
 
 
 ABallGameMode::ABallGameMode()
@@ -16,7 +15,7 @@ ABallGameMode::ABallGameMode()
     BallSpawnerInstance = CreateDefaultSubobject<UBallSpawner>(TEXT("BallSpawnerInstance"));
     DefaultPawnClass = AMyCharacter::StaticClass();
     HUDClass = AMyHUD::StaticClass();
-   }
+}
 
 void ABallGameMode::BeginPlay()
 {
