@@ -5,10 +5,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "PickupComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "BallClass.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
@@ -72,7 +73,7 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
@@ -132,6 +133,8 @@ void AMyCharacter::GetBall(ABallClass* ball)
 	ActualBall->SetActorHiddenInGame(true);
 	ActualBall->SetActorEnableCollision(false);
 }
+
+
 
 void AMyCharacter::MoveForward(float AxisValue)
 {

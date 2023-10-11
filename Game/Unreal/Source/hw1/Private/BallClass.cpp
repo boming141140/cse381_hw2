@@ -6,10 +6,10 @@
 #include "Components/StaticMeshComponent.h"
 
 
+
 // Sets default values
 ABallClass::ABallClass()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create and set up the mesh component
