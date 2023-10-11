@@ -18,8 +18,8 @@ public:
 	bool collided = true;
 	AActor* owner;
 	// Meshes
-	UStaticMesh* SphereMesh;
-
+	UStaticMeshComponent* MeshComponent;
+	UPhysicalMaterial* PhysicalMaterial;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,8 +27,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	// Hit event callback
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
