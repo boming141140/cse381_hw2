@@ -23,4 +23,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void PlayGuardAnimation();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* GuardMeshComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimSequence* GuardAnimation;
+
 };

@@ -20,7 +20,7 @@ public:
 	bool collided = true;
 	AActor* owner;
 	// Meshes
-	UStaticMesh* SphereMesh;
+	//UStaticMesh* SphereMesh;
 	UStaticMeshComponent* MeshComponent;
 	UPhysicalMaterial* PhysicalMaterial;
 
