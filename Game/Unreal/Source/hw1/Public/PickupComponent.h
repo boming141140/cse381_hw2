@@ -23,9 +23,6 @@ public:
 	// Release the held ball
 	UFUNCTION()
 	void ThrowBall();
-
-private:
-	// The currently held ball, if any
 	UPROPERTY()
 	ABallClass* HeldBall;
 };

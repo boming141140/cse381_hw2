@@ -30,32 +30,42 @@ AMyCharacter::AMyCharacter()
 	CharacterMesh->SetupAttachment(RootComponent); // Attach the mesh to the root component (CapsuleComponent)
 
 	// Instantiating your class Components
-
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 
 	//Set the location and rotation of the Character Mesh Transform
-
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
 
 	// Attaching your class Components to the default character's Skeletal Mesh Component.
-
 	CameraComp->SetupAttachment(RootComponent);
 
-	//Setting class variables of the Character movement component
+	// Setup the collision for the character's capsule component
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	// Assuming that your CharacterMesh is meant to also interact with objects, set its collision as well
+	CharacterMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	CharacterMesh->SetNotifyRigidBodyCollision(true);
 
-	GetCharacterMovement()->bIgnoreBaseRotation = true;
+	// Optional: If you want more detailed control over what the capsule and mesh collide with,
+	// you can set the collision profiles here. E.g.,
+	// GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	// CharacterMesh->SetCollisionProfileName(TEXT("Pawn"));
 
 	//Initialize PickupComponent
-	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
+	//PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnPlayerOverlapBegin);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+
 }
 
 // Called every frame
@@ -110,11 +120,38 @@ void AMyCharacter::MoveRight(float AxisValue)
 	}
 }
 
-void AMyCharacter::AttemptPickup(ABallClass* BallToPickup)
+void AMyCharacter::AttemptPickup(AActor* BallToPickup)
 {
-	if (PickupComponent && BallToPickup)
+	// Log that we entered the function
+	UE_LOG(LogTemp, Warning, TEXT("AttemptPickup called."));
+
+	// Check if the player is already holding a ball
+	if (HeldBall)
 	{
-		PickupComponent->PickupBall(BallToPickup);
-		// You can implement further logic here, e.g. add points to the player
+		// Log that the player is already holding a ball
+		UE_LOG(LogTemp, Warning, TEXT("Player is already holding a ball."));
+		return;
+	}
+    HeldBall = Cast<ABallClass>(BallToPickup);
+
+    // Optional: Make the ball a child of the character so it moves with the character
+    BallToPickup->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+    // Optional: Set the ball invisible or change its position to indicate it's being held
+    // For example, if it's a static mesh:
+    UStaticMeshComponent* BallMesh = BallToPickup->FindComponentByClass<UStaticMeshComponent>();
+    if (BallMesh)
+    {
+        BallMesh->SetVisibility(false);
+    }
+}
+
+void AMyCharacter::OnPlayerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Check if the other actor is a ball
+	ABallClass* Ball = Cast<ABallClass>(OtherActor);
+	if (Ball)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Player overlapped with ball!"));
 	}
 }
