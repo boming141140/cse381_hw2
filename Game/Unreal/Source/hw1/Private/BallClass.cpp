@@ -2,6 +2,7 @@
 
 
 #include "BallClass.h"
+#include "MyCharacter.h"
 #include "Components/StaticMeshComponent.h"
 
 
@@ -11,21 +12,36 @@ ABallClass::ABallClass()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Create and set up the mesh component
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	RootComponent = MeshComponent;
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshFinder(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	if (SphereMeshFinder.Succeeded())
 	{
-		SphereMesh = SphereMeshFinder.Object;
+		MeshComponent->SetStaticMesh(SphereMeshFinder.Object);
+	}
+
+	// Set up collision
+	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
+	MeshComponent->OnComponentHit.AddDynamic(this, &ABallClass::OnComponentHit);
+	MeshComponent->SetSimulatePhysics(true);
+
+	// Enable the generation of hit events
+	MeshComponent->BodyInstance.SetInstanceNotifyRBCollision(true);
+	
+	// Apply bouncy physics material
+	static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> PhysicalMaterialObj(TEXT("PhysicalMaterial'/Game/StarterContent/Materials/Ballbounciness.Ballbounciness'"));
+
+	if (PhysicalMaterialObj.Succeeded())
+	{
+		PhysicalMaterial = PhysicalMaterialObj.Object;
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Shape_Sphere is not found!"));
+		UE_LOG(LogTemp, Warning, TEXT("Physical material not found!"));
 	}
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetMobility(EComponentMobility::Movable);
-	MeshComponent->SetStaticMesh(SphereMesh);
-
-	// Add the dynamic for hit
-
+	MeshComponent->SetPhysMaterialOverride(PhysicalMaterial);
 	owner = nullptr;
 }
 
@@ -33,18 +49,7 @@ ABallClass::ABallClass()
 void ABallClass::BeginPlay()
 {
 	Super::BeginPlay();
-
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComponent->SetNotifyRigidBodyCollision(true);
-	MeshComponent->OnComponentHit.AddDynamic(this, &ABallClass::OnHit);
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
-	MeshComponent->SetGenerateOverlapEvents(true);
-	MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABallClass::OnOverlapBegin);
-
-	RootComponent = MeshComponent;
+	
 }
 
 // Called every frame
@@ -54,31 +59,44 @@ void ABallClass::Tick(float DeltaTime)
 
 }
 
-void ABallClass::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-    // Check if the other actor is the player and if the player can pick up the ball
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Your log message here"));
-	}
-	AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("OnHit called."));
-	if (Player)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player exists."));
-		Player->AttemptPickup(this);
-		// You can destroy the ball or set it to invisible after it's picked up
-		this->Destroy();
-	}
-}
 
-void ABallClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Check if the other actor is the player
-	AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
-	if (Player)
+	// Check if the ball collided with an instance of AMyCharacter (or whatever your character class is named)
+
+	UE_LOG(LogTemp, Warning, TEXT("HITTTTTTTT"));
+	AMyCharacter* MyCharacterInstance = Cast<AMyCharacter>(OtherActor);
+	if (owner) 
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Ball overlapped with player!"));
+		if (MyCharacterInstance && MyCharacterInstance != owner)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collide with player1"));
+			MyCharacterInstance->HealthPoints -= 1;
+		}
+		owner = nullptr;
 	}
+	else
+	{
+		if (MyCharacterInstance)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collide with player2"));
+			if (!MyCharacterInstance->hasBall) 
+			{
+				owner = MyCharacterInstance;
+				MyCharacterInstance->hasBall = true;
+				AActor* ParentActor = HitComponent->GetOwner();
+				ABallClass* MeshActor = Cast<ABallClass>(ParentActor);
+				if (MeshActor) 
+				{
+					MyCharacterInstance->GetBall(MeshActor);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Physical material not found!"));
+				}
+			}
+		}
+	}
+
 }
 
