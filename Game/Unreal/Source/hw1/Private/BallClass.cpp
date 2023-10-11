@@ -3,8 +3,8 @@
 
 #include "BallClass.h"
 #include "MyCharacter.h"
+#include "Components/StaticMeshComponent.h"
 
-#include "UObject/ConstructorHelpers.h"
 
 
 // Sets default values
@@ -23,7 +23,6 @@ ABallClass::ABallClass()
 	}
 
 	// Set up collision
-	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
 	MeshComponent->OnComponentHit.AddDynamic(this, &ABallClass::OnComponentHit);
 	MeshComponent->SetSimulatePhysics(true);
@@ -64,7 +63,8 @@ void ABallClass::Tick(float DeltaTime)
 void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Check if the ball collided with an instance of AMyCharacter (or whatever your character class is named)
-	
+
+	UE_LOG(LogTemp, Warning, TEXT("HITTTTTTTT"));
 	AMyCharacter* MyCharacterInstance = Cast<AMyCharacter>(OtherActor);
 	if (owner) 
 	{

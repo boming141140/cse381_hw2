@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/StaticMeshComponent.h"
 #include "BallClass.generated.h"
 
 
@@ -18,16 +20,17 @@ public:
 	bool collided = true;
 	AActor* owner;
 	// Meshes
+	UStaticMesh* SphereMesh;
 	UStaticMeshComponent* MeshComponent;
 	UPhysicalMaterial* PhysicalMaterial;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION()
+	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	// Hit event callback
-	UFUNCTION()
-	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

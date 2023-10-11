@@ -18,7 +18,6 @@ UBallSpawner::UBallSpawner()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	
 }
 
 
@@ -63,12 +62,14 @@ static void RetrieveChuteLocation(FVector& ChuteLocation, UWorld* World)
 void UBallSpawner::SpawnBall()
 {
 	//Spawn Ball
-	FVector SpawnLocation = ChuteLocation;
+	FVector SpawnLocation = ChuteLocation;  
 	SpawnLocation.Z += 5.0f;
 	FRotator SpawnRotation = FRotator(0.f);
 	UWorld* CurrentWorld = GetWorld();
 	ABallClass* SpawnedActor = CurrentWorld->SpawnActor<ABallClass>(SpawnLocation, SpawnRotation);
 	
+
+	//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
 	// Increment the counter each time the timer function is called.
 	RepetitionCounter++;
 	if (RepetitionCounter >= MaxRepetitions)
@@ -77,6 +78,7 @@ void UBallSpawner::SpawnBall()
 	}
 	else
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
 		SpawnedActors.Add(SpawnedActor);
 	}
 
