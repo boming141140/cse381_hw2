@@ -8,6 +8,7 @@
 #include "MyPlayerController.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Character.h"
+#include "BallClass.h"
 #include "MyCharacter.generated.h"
 
 UCLASS()
@@ -28,9 +29,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//Spring Arm Component to follow the camera behind the player
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class USpringArmComponent* SpringArmComp;*/
 
 	//Player follow camera
 	AMyPlayerController* ScreenController;
@@ -45,11 +43,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	//Called for forwards/backward input
-
 	void MoveForward(float InputAxis);
 
 	//called for left/right side input
-
 	void MoveRight(float InputAxis);
 
 	void HandleShootBall();

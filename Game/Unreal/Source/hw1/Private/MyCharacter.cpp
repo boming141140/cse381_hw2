@@ -5,10 +5,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "MyPlayerController.h"
+#include "BallClass.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
-#include "BallClass.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -68,7 +67,7 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 
