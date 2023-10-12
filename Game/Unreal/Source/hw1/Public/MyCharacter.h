@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BallClass.h"
 #include "Camera/CameraComponent.h"
+#include "MyPlayerController.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Character.h"
 #include "BallClass.h"
@@ -30,6 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	//Player follow camera
+	AMyPlayerController* ScreenController;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UCameraComponent* CameraComp;
 	
@@ -52,6 +54,8 @@ public:
 
 	void PitchInput(float val);
 
-	void ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball, APlayerController* PlayerController, UWorld* WorldContext);
+	void ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball);
+
+	FVector GetScreenToWorldDirection();
 
 };

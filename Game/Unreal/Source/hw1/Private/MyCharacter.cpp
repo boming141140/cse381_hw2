@@ -13,6 +13,7 @@
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
+	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	// Adjust the capsule component properties if necessary
@@ -69,10 +70,20 @@ void AMyCharacter::BeginPlay()
 
 }
 
+
+
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		// Set the mouse position to the center of the screen.
+		FVector2D ViewportSize;
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+	}
 	
 }
 
@@ -109,16 +120,14 @@ void AMyCharacter::HandleShootBall()
 	if (hasBall && ActualBall)
 	{
 		FVector ThrowPosition = this->GetActorLocation() + (CameraComp->GetForwardVector() * 200);
+		ActualBall->SetActorLocation(ThrowPosition);
 		ActualBall->SetActorHiddenInGame(false);
 		ActualBall->SetActorEnableCollision(true);
-		ActualBall->SetActorLocation(ThrowPosition);
-		ActualBall->SetActorRotation(CameraComp->GetComponentRotation());
 		ActualBall->MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-		// Call your shooting function
-		ShootBallInScreenCenterDirection(ActualBall->MeshComponent, GetWorld()->GetFirstPlayerController(), GetWorld());
-		hasBall = false; // Assuming the ball is "used up" after shooting
 		MeshComponentForCharacter->SetStaticMesh(nullptr);
+		// Call your shooting function
+		ShootBallInScreenCenterDirection(ActualBall->MeshComponent);
+		hasBall = false; // Assuming the ball is "used up" after shooting
 		ActualBall = nullptr;
 	}
 }
@@ -166,24 +175,60 @@ void AMyCharacter::MoveRight(float AxisValue)
 	}
 }
 
-void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball, APlayerController* PlayerController, UWorld* WorldContext)
+FVector AMyCharacter::GetScreenToWorldDirection()
 {
-	if (!Ball || !WorldContext)
-		return;
+	FVector ForwardVector;
 
-	FVector ShootDirection;
-	if (CameraComp)
+	// Make sure you have a valid PlayerController
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC)
 	{
-		// Get the forward vector of the camera component
-		ShootDirection = CameraComp->GetForwardVector().GetSafeNormal();;
+		UE_LOG(LogTemp, Warning, TEXT("No PlayerController found."));
+		return ForwardVector;
 	}
-	if (Ball->IsSimulatingPhysics())
+
+	FVector StartLocation;
+	FVector2D MousePosition;
+
+	if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
-		float ForceMagnitude = 1000.0f; // adjust as needed
-		Ball->AddForce(ShootDirection * ForceMagnitude);
+		// Convert mouse position to world space direction
+		PC->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, StartLocation, ForwardVector);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("no physics find"));
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get mouse position."));
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("MyVector: %s"), *ForwardVector.ToString());
+	return ForwardVector; // This is the direction from the screen into the game world.
+}
+
+void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball)
+{
+	if (!Ball)
+		return;
+		// Now you can access functions or variables inside MyPC
+		FVector Direction = GetScreenToWorldDirection();
+
+		Direction.Normalize();
+		UE_LOG(LogTemp, Warning, TEXT("MyVector: %s"), *Direction.ToString());
+		if (Ball->IsSimulatingPhysics())
+		{
+			float ForceMagnitudeX = 300000.0f; // adjust as needed
+			float ForceMagnitudeY = 100000.0f;
+			float ForceMagnitudeZ = 600000.0f;
+			UE_LOG(LogTemp, Warning, TEXT("Direction Before Multiply: %s"), *Direction.ToString());
+			Direction.X *= ForceMagnitudeX;
+			Direction.Y *= ForceMagnitudeY;
+			Direction.Z *= ForceMagnitudeZ;
+			Ball->AddImpulse(Direction);
+			UE_LOG(LogTemp, Warning, TEXT("ResultantForce: %s"), *Direction.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("no physics find"));
+		}
+	
+	
 }
