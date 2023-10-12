@@ -69,7 +69,7 @@ void UBallSpawner::SpawnBall()
 	ABallClass* SpawnedActor = CurrentWorld->SpawnActor<ABallClass>(SpawnLocation, SpawnRotation);
 	
 
-	UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
+	//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
 	// Increment the counter each time the timer function is called.
 	RepetitionCounter++;
 	if (RepetitionCounter >= MaxRepetitions)
@@ -78,9 +78,10 @@ void UBallSpawner::SpawnBall()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
+		//UE_LOG(LogTemp, Warning, TEXT("BALL SAPAWN 123412341234"));
 		SpawnedActors.Add(SpawnedActor);
 	}
+
 }
 
 
@@ -91,4 +92,3 @@ void UBallSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	// ...
 }
-
