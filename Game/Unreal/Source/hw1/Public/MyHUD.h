@@ -27,6 +27,10 @@ public:
 
     // Sets the Wolfie Guard count
     void SetWolfieGuardCount(int32 NewCount);
+    
+    void SetGameOver(bool boo);
+
+    void GameOverDisplayScreen();
 
 private:
     // Player's health (0 - 3)
@@ -37,4 +41,12 @@ private:
 
     // Number of Wolfie Guards alive
     int32 WolfieGuardCount = 5;
+
+    void AddPlayerHUD();
+    void AddGuardHealthBars();
+    void AddScore();
+
+    bool bIsGameOver = false;
+    bool bHasWon = false;
+    int32 AliveTrueWolfies = 5;
 };

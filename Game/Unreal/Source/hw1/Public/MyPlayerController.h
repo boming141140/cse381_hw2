@@ -14,10 +14,9 @@ class HW1_API AMyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
-	public:
-		AMyPlayerController();
-		virtual void Tick(float DeltaTime) override;
-		FVector Direction;
-		FVector GetScreenToWorldDirection();
-
+public:
+	AMyPlayerController();
+	virtual void Tick(float DeltaTime) override;
+	FVector Direction;
+	FVector GetScreenToWorldDirection();
 };
