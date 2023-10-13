@@ -64,7 +64,7 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 {
 	// Check if the ball collided with an instance of AMyCharacter (or whatever your character class is named)
 
-	UE_LOG(LogTemp, Warning, TEXT("HITTTTTTTT"));
+	//UE_LOG(LogTemp, Warning, TEXT("HITTTTTTTT"));
 	AMyCharacter* MyCharacterInstance = Cast<AMyCharacter>(OtherActor);
 	if (owner) 
 	{
