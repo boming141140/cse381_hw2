@@ -87,7 +87,8 @@ void AMyCharacter::Tick(float DeltaTime)
 		// Set the mouse position to the center of the screen.
 		/*FVector2D ViewportSize;
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
-		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);*/
+		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+		*/
 	}
 	CheckDead();
 }
@@ -124,7 +125,7 @@ void AMyCharacter::HandleShootBall()
 	UE_LOG(LogTemp, Warning, TEXT("shooted"));
 	if (hasBall && ActualBall)
 	{
-		FVector ThrowPosition = this->GetActorLocation() + (CameraComp->GetForwardVector() * 200);
+		FVector ThrowPosition = this->GetActorLocation() + (CameraComp->GetForwardVector() * 100);
 		ActualBall->SetActorLocation(ThrowPosition);
 		ActualBall->SetActorHiddenInGame(false);
 		ActualBall->SetActorEnableCollision(true);

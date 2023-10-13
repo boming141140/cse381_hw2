@@ -15,9 +15,12 @@ class HW1_API ABallShootingWofie : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ABallShootingWofie();
+	UPROPERTY()
 	float health;
 	bool hasBall;
+	UPROPERTY()
 	ABallClass* ActualBall;
+	UPROPERTY()
 	UAnimSequence* ShootingAnimation;
 protected:
 	// Called when the game starts or when spawned

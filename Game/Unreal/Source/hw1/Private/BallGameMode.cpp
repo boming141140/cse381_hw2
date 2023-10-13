@@ -122,14 +122,3 @@ void ABallGameMode::SummonTrueWofie()
 }
 
 
-void ABallGameMode::SummonNavMesh(UWorld* world)
-{
-    FVector Location(16380.0, 19464.0, 38.0);  // Temp spawn to start next to ball spawner
-    FRotator Rotation(0.f, 0.f, 0.f);
-    ANavMeshBoundsVolume* NavMeshVolume = world->SpawnActor<ANavMeshBoundsVolume>(Location, Rotation);
-    if (NavMeshVolume)
-    {
-        NavMeshVolume->SetActorScale3D(FVector(200.0f, 200.0f, 20.0f));  // This would set its scale which affects its size. Adjust accordingly.
-    }
-    
-}

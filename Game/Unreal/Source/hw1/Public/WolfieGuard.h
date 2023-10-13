@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "WolfieGuard.generated.h"
 
 UCLASS()
-class HW1_API AWolfieGuard : public AActor
+class HW1_API AWolfieGuard : public ACharacter
 {
 	GENERATED_BODY()
 	
@@ -19,7 +19,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	int32 health;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -30,6 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimSequence* GuardAnimation;
 
+	// Methods to set up the guard mesh and animation
+	void SetupGuardMesh(const FString& MeshPath);
+	void SetupGuardAnimation(const FString& AnimationPath);
+	void DetectEnemy(UWorld* world);
+	void CheckDeath();
 	// Skeletal mesh component for the guard
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	USkeletalMeshComponent* GuardMeshComponent;
