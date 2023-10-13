@@ -54,6 +54,8 @@ public:
 
 	void PitchInput(float val);
 
+	void YawInput(float val);
+
 	void ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball);
 
 	FVector GetScreenToWorldDirection();

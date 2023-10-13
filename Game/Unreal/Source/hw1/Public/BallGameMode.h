@@ -22,4 +22,6 @@ public:
 	virtual void BeginPlay() override;
 	void CheckAndPrintActorName(UObject* PotentialSubobject);
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	void SummonTrueWofie();
+	void SummonNavMesh(UWorld* world);
 };

@@ -4,6 +4,7 @@
 #include "BallClass.h"
 #include "MyCharacter.h"
 #include "Components/StaticMeshComponent.h"
+#include "BallShootingWofie.h"
 
 
 
@@ -64,14 +65,19 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 {
 	// Check if the ball collided with an instance of AMyCharacter (or whatever your character class is named)
 
-	UE_LOG(LogTemp, Warning, TEXT("HITTTTTTTT"));
 	AMyCharacter* MyCharacterInstance = Cast<AMyCharacter>(OtherActor);
+	ABallShootingWofie* WofieInstance = Cast<ABallShootingWofie>(OtherActor);
 	if (owner) 
 	{
 		if (MyCharacterInstance && MyCharacterInstance != owner)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Collide with player1"));
+			UE_LOG(LogTemp, Warning, TEXT("Collide with player"));
 			MyCharacterInstance->HealthPoints -= 1;
+		}
+		else if (WofieInstance && WofieInstance != owner)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collide with True Wofie"));
+			WofieInstance->health -= 1;
 		}
 		owner = nullptr;
 	}
@@ -79,16 +85,33 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 	{
 		if (MyCharacterInstance)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Collide with player2"));
+			UE_LOG(LogTemp, Warning, TEXT("Collide with player"));
 			if (!MyCharacterInstance->hasBall) 
 			{
 				owner = MyCharacterInstance;
-				MyCharacterInstance->hasBall = true;
 				AActor* ParentActor = HitComponent->GetOwner();
 				ABallClass* MeshActor = Cast<ABallClass>(ParentActor);
 				if (MeshActor) 
 				{
 					MyCharacterInstance->GetBall(MeshActor);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Physical material not found!"));
+				}
+			}
+		}
+		else if (WofieInstance)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collide with True Wofie"));
+			if (!WofieInstance->hasBall)
+			{
+				owner = MyCharacterInstance;
+				AActor* ParentActor = HitComponent->GetOwner();
+				ABallClass* MeshActor = Cast<ABallClass>(ParentActor);
+				if (MeshActor)
+				{
+					WofieInstance->GetBall(MeshActor);
 				}
 				else
 				{
