@@ -15,7 +15,7 @@ class HW1_API ABallShootingWofie : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ABallShootingWofie();
-	int32 health;
+	float health;
 	bool hasBall;
 	ABallClass* ActualBall;
 	UAnimSequence* ShootingAnimation;
@@ -30,6 +30,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	float MaxHealth = 3;
 	
 	void StartShootingAnimation();
 	void FindTheClosetBall(UWorld* world);
@@ -38,4 +39,6 @@ public:
 	void GetBall(ABallClass* ball);
 	void ShotBall(FVector Direction);
 	void CheckDeath();
+	float GetHealthPercent();
+	bool IsAlive;
 };

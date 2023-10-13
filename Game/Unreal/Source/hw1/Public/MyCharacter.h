@@ -59,5 +59,10 @@ public:
 	void ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball);
 
 	FVector GetScreenToWorldDirection();
+	float CurrentHealth;
+	float MaxHealth;
+	float GetHealthPercent();
+	void CheckDead();
 
+	int32 score = 0;
 };

@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MyHUD.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -61,7 +62,10 @@ AMyCharacter::AMyCharacter()
 
 	bUseControllerRotationPitch = true;
 	bUseControllerRotationYaw = true;
-	bUseControllerRotationRoll = false; 
+	bUseControllerRotationRoll = false;
+
+	CurrentHealth = 5;
+	MaxHealth = 5;
 }
 
 // Called when the game starts or when spawned
@@ -85,7 +89,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);*/
 	}
-	
+	CheckDead();
 }
 
 // Called to bind functionality to input
@@ -221,4 +225,21 @@ FVector AMyCharacter::GetScreenToWorldDirection()
 	FVector AimDirection = CombinedRotation.Vector();
 
 	return AimDirection;
+}
+
+float AMyCharacter::GetHealthPercent()
+{
+	return CurrentHealth / MaxHealth;
+}
+
+void AMyCharacter::CheckDead()
+{
+	if (CurrentHealth <= 0)
+	{
+		AMyHUD* MyHUDInstance = Cast<AMyHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+		if (MyHUDInstance)
+		{
+			MyHUDInstance->SetGameOver(true);
+		}
+	}
 }

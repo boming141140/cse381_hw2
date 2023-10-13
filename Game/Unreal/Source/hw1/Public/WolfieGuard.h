@@ -37,7 +37,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCapsuleComponent* CapsuleComponent;
 
+	float CurrentHealth;
+	float MaxHealth = 3;
+
 	// Methods to set up the guard mesh and animation
 	void SetupGuardMesh(const FString& MeshPath);
 	void SetupGuardAnimation(const FString& AnimationPath);
+	float GetHealthPercent();
+
+	bool IsAlive;
 };

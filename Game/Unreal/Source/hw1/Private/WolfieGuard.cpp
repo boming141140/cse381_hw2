@@ -31,6 +31,9 @@ AWolfieGuard::AWolfieGuard()
     GuardMeshComponent->SetAnimationMode(EAnimationMode::AnimationSingleNode);
     GuardMeshComponent->SetupAttachment(RootComponent); // Attach skeletal mesh to capsule
 
+    CurrentHealth = 3;
+    MaxHealth = 3;
+    IsAlive = true;
     /*
     // Create and set up the capsule component for physics interactions
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule_Guard1"));
@@ -131,5 +134,10 @@ void AWolfieGuard::SetupGuardAnimation(const FString& AnimationPath)
     {
         UE_LOG(LogTemp, Warning, TEXT("ANIMATION NOT FOUND"));
     }
+}
+
+float AWolfieGuard::GetHealthPercent()
+{
+    return (CurrentHealth / MaxHealth);
 }
 
