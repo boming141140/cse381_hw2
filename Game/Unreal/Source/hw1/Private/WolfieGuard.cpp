@@ -177,7 +177,7 @@ void AWolfieGuard::DetectEnemy(UWorld* world)
         AIController->SetTarget(ClosestEnemy);
     }
 }
-
+/*
 void  AWolfieGuard::CheckDeath()
 {
     if (health <= 0) {
@@ -191,7 +191,7 @@ void  AWolfieGuard::CheckDeath()
         SetActorTickEnabled(false);
 
     }
-}
+}*/
 float AWolfieGuard::GetHealthPercent()
 {
     return (CurrentHealth / MaxHealth);
