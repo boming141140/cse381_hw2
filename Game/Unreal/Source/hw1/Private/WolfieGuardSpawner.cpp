@@ -2,6 +2,7 @@
 
 #include "WolfieGuardSpawner.h"
 #include "WolfieGuard.h"
+#include "GuardAIController.h"
 
 // Sets default values for this component's properties
 UWolfieGuardSpawner::UWolfieGuardSpawner()
@@ -70,11 +71,21 @@ void UWolfieGuardSpawner::SpawnGuard()
 		if (!(*SpawnData.SpawnedFlag))
 		{
 			AWolfieGuard* NewGuard = CurrentWorld->SpawnActor<AWolfieGuard>(SpawnData.Location, SpawnRotation);
-			NewGuard->GuardMeshComponent->SetRelativeLocation(SpawnData.RelativeLocation);
-			NewGuard->GuardMeshComponent->SetWorldScale3D(SpawnData.WorldScale);
+			NewGuard->GetMesh()->SetRelativeLocation(SpawnData.RelativeLocation);
+			NewGuard->GetMesh()->SetWorldScale3D(SpawnData.WorldScale);
 			NewGuard->SetupGuardMesh(SpawnData.MeshPath);
 			NewGuard->SetupGuardAnimation(SpawnData.AnimationPath);
 			NewGuard->SetActorScale3D(SpawnData.Scale);
+			NewGuard->AIControllerClass = AGuardAIController::StaticClass();
+
+			if (NewGuard && !NewGuard->GetController())
+			{
+				AGuardAIController* NewController = GetWorld()->SpawnActor<AGuardAIController>();
+				if (NewController)
+				{
+					NewController->Possess(NewGuard);
+				}
+			}
 			*SpawnData.SpawnedFlag = true;
 		}
 	}

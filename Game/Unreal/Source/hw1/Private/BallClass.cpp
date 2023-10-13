@@ -3,6 +3,7 @@
 
 #include "BallClass.h"
 #include "MyCharacter.h"
+#include "WolfieGuard.h"
 #include "Components/StaticMeshComponent.h"
 #include "BallShootingWofie.h"
 
@@ -67,6 +68,7 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 
 	AMyCharacter* MyCharacterInstance = Cast<AMyCharacter>(OtherActor);
 	ABallShootingWofie* WofieInstance = Cast<ABallShootingWofie>(OtherActor);
+	AWolfieGuard* WolfieGuardInstance = Cast<AWolfieGuard>(OtherActor);
 	if (owner) 
 	{
 		if (MyCharacterInstance && MyCharacterInstance != owner)
@@ -77,6 +79,11 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 		else if (WofieInstance && WofieInstance != owner)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Collide with True Wofie"));
+			WofieInstance->health -= 1;
+		}
+		else if (WolfieGuardInstance && WolfieGuardInstance != owner)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collide with True WlofieGuard"));
 			WofieInstance->health -= 1;
 		}
 		owner = nullptr;

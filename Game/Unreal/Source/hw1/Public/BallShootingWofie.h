@@ -16,8 +16,11 @@ public:
 	// Sets default values for this character's properties
 	ABallShootingWofie();
 	int32 health;
+	UPROPERTY()
 	bool hasBall;
+	UPROPERTY()
 	ABallClass* ActualBall;
+	UPROPERTY()
 	UAnimSequence* ShootingAnimation;
 protected:
 	// Called when the game starts or when spawned

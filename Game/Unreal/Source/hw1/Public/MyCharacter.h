@@ -31,6 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	//Player follow camera
+	UPROPERTY()
 	AMyPlayerController* ScreenController;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UCameraComponent* CameraComp;
