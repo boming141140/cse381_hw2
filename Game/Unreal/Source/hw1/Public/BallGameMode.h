@@ -8,6 +8,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "BallSpawner.h"
 #include "GameFramework/Actor.h"
+#include "WolfieGuardSpawner.h"
 #include "BallGameMode.generated.h"
 /**
  * 
@@ -19,6 +20,8 @@ class HW1_API ABallGameMode : public AGameModeBase
 public:
 	ABallGameMode();
 	UBallSpawner* BallSpawnerInstance;
+	//UWolfieGuard1Spawner* GuardSpawnerInstance;
+	UWolfieGuardSpawner* GuardSpawnerInstance;
 	virtual void BeginPlay() override;
 	void CheckAndPrintActorName(UObject* PotentialSubobject);
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;

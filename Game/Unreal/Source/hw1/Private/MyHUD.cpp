@@ -34,6 +34,44 @@ void AMyHUD::DrawHUD()
 
     FString GuardText = FString::Printf(TEXT("Wolfie Guards: %d"), WolfieGuardCount);
     DrawText(GuardText, FColor::White, 50, 85, nullptr, 1.5f);
+    
+    // Define crosshair dimensions
+    const float CrosshairSize = 10.0f;
+
+    // Calculate the center of the screen
+    const float CenterX = Canvas->SizeX / 2;
+    const float CenterY = Canvas->SizeY / 2;
+
+    // Draw crosshair
+    DrawLine(CenterX - CrosshairSize, CenterY, CenterX + CrosshairSize, CenterY, FLinearColor::White); // Horizontal line
+    DrawLine(CenterX, CenterY - CrosshairSize, CenterX, CenterY + CrosshairSize, FLinearColor::White); // Vertical line
+
+    // Iterate through all the guards in the world
+    /*for (TActorIterator<WolfieGuard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+    {
+        WolfieGuard* Guard = *ActorItr;
+
+        if (Guard && Guard->IsAlive())  // Assuming you have an IsAlive method or similar
+        {
+            FVector2D ScreenLocation;
+            // Convert the guard's world location to screen location
+            ProjectWorldLocationToScreen(Guard->GetActorLocation(), ScreenLocation);
+
+            // Define dimensions of the health bar
+            float BarWidth = 50.0f;
+            float BarHeight = 10.0f;
+
+            // Calculate the width based on the guard's current health
+            float HealthPercentage = Guard->GetCurrentHealth() / Guard->GetMaxHealth();
+            float HealthWidth = FMath::Lerp(0.0f, BarWidth, HealthPercentage);
+
+            // Draw the background (gray bar)
+            DrawRect(FLinearColor::Gray, ScreenLocation.X - BarWidth / 2, ScreenLocation.Y - 60, BarWidth, BarHeight);
+
+            // Draw the health (green bar)
+            DrawRect(FLinearColor::Green, ScreenLocation.X - BarWidth / 2, ScreenLocation.Y - 60, HealthWidth, BarHeight);
+        }
+    }*/
 }
 
 void AMyHUD::SetHealth(int32 NewHealth)

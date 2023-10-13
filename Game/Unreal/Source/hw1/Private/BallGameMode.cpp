@@ -22,6 +22,8 @@ ABallGameMode::ABallGameMode()
     BallSpawnerInstance = CreateDefaultSubobject<UBallSpawner>(TEXT("BallSpawnerInstance"));
     DefaultPawnClass = AMyCharacter::StaticClass();
     HUDClass = AMyHUD::StaticClass();
+    //GuardSpawnerInstance = CreateDefaultSubobject<UWolfieGuard1Spawner>(TEXT("GuardSpawnerInstance"));
+    GuardSpawnerInstance = CreateDefaultSubobject<UWolfieGuardSpawner>(TEXT("GuardSpawnerInstance"));
 }
 
 void ABallGameMode::BeginPlay()
@@ -79,7 +81,7 @@ void ABallGameMode::CheckAndPrintActorName(UObject* PotentialSubobject)
 AActor* ABallGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
     //FVector SpawnLocation(11785, 19467, 170);  // Replace with your coordinates
-    FVector SpawnLocation(19385, 19467, 170);  // Temp spawn to start next to ball spawner
+    FVector SpawnLocation(13385, 19467, 170);  // Temp spawn to start next to ball spawner
     FRotator SpawnRotation(0.f, 0.f, 0.f);
     return GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), SpawnLocation, SpawnRotation);
 }
