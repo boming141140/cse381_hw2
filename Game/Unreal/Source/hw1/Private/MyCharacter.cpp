@@ -4,6 +4,7 @@
 #include "MyCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "BallClass.h"
 #include "Kismet/GameplayStatics.h"
@@ -80,9 +81,9 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (PC)
 	{
 		// Set the mouse position to the center of the screen.
-		FVector2D ViewportSize;
+		/*FVector2D ViewportSize;
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
-		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+		PC->SetMouseLocation(ViewportSize.X / 2, ViewportSize.Y / 2);*/
 	}
 	
 }
@@ -134,6 +135,7 @@ void AMyCharacter::HandleShootBall()
 
 void AMyCharacter::GetBall(ABallClass* ball)
 {
+	hasBall = true;
 	ActualBall = ball;
 	MeshComponentForCharacter->SetStaticMesh(ball->MeshComponent->GetStaticMesh());
 	OriginalScale = ball->MeshComponent->GetComponentScale();
@@ -175,35 +177,6 @@ void AMyCharacter::MoveRight(float AxisValue)
 	}
 }
 
-FVector AMyCharacter::GetScreenToWorldDirection()
-{
-	FVector ForwardVector;
-
-	// Make sure you have a valid PlayerController
-	APlayerController* PC = Cast<APlayerController>(GetController());
-	if (!PC)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No PlayerController found."));
-		return ForwardVector;
-	}
-
-	FVector StartLocation;
-	FVector2D MousePosition;
-
-	if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
-	{
-		// Convert mouse position to world space direction
-		PC->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, StartLocation, ForwardVector);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get mouse position."));
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("MyVector: %s"), *ForwardVector.ToString());
-	return ForwardVector; // This is the direction from the screen into the game world.
-}
-
 void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball)
 {
 	if (!Ball)
@@ -215,9 +188,9 @@ void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball)
 		UE_LOG(LogTemp, Warning, TEXT("MyVector: %s"), *Direction.ToString());
 		if (Ball->IsSimulatingPhysics())
 		{
-			float ForceMagnitudeX = 300000.0f; // adjust as needed
+			float ForceMagnitudeX = 200000.0f; // adjust as needed
 			float ForceMagnitudeY = 100000.0f;
-			float ForceMagnitudeZ = 600000.0f;
+			float ForceMagnitudeZ = 500000.0f;
 			UE_LOG(LogTemp, Warning, TEXT("Direction Before Multiply: %s"), *Direction.ToString());
 			Direction.X *= ForceMagnitudeX;
 			Direction.Y *= ForceMagnitudeY;
@@ -231,4 +204,21 @@ void AMyCharacter::ShootBallInScreenCenterDirection(UStaticMeshComponent* Ball)
 		}
 	
 	
+}
+
+FVector AMyCharacter::GetScreenToWorldDirection()
+{
+	// Get yaw from the character's rotation
+	float Yaw = GetActorRotation().Yaw;
+
+	// Get pitch from the camera's relative rotation
+	float Pitch = CameraComp->GetRelativeRotation().Pitch;
+
+	// Create a combined rotation
+	FRotator CombinedRotation = FRotator(Pitch, Yaw, 0.0f);
+
+	// Convert the rotation to a direction vector
+	FVector AimDirection = CombinedRotation.Vector();
+
+	return AimDirection;
 }
