@@ -49,6 +49,7 @@ ABallShootingWofie::ABallShootingWofie()
     health = 3;
     hasBall = false;
     ActualBall = nullptr;
+    IsAlive = true;
 }
 
 // Called when the game starts or when spawned
@@ -244,8 +245,14 @@ void ABallShootingWofie::CheckDeath()
         // Reset any related flags or pointers
         hasBall = false;
         ActualBall = nullptr;
+        IsAlive = false;
 
     }   
+}
+
+float ABallShootingWofie::GetHealthPercent()
+{
+    return health / MaxHealth;
 }
 
 

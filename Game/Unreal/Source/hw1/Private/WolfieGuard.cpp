@@ -32,6 +32,9 @@ AWolfieGuard::AWolfieGuard()
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);  // Set to no collision as we want the capsule to handle it
     GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 
+    CurrentHealth = 3;
+    MaxHealth = 3;
+    IsAlive = true;
     /*
     // Create and set up the capsule component for physics interactions
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule_Guard1"));
@@ -189,3 +192,8 @@ void  AWolfieGuard::CheckDeath()
 
     }
 }
+float AWolfieGuard::GetHealthPercent()
+{
+    return (CurrentHealth / MaxHealth);
+}
+

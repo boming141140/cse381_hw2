@@ -73,8 +73,8 @@ void ABallClass::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 	{
 		if (MyCharacterInstance && MyCharacterInstance != owner)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Collide with player"));
-			MyCharacterInstance->HealthPoints -= 1;
+			UE_LOG(LogTemp, Warning, TEXT("BALL Collide with player"));
+			MyCharacterInstance->CurrentHealth -= 1;
 		}
 		else if (WofieInstance && WofieInstance != owner)
 		{
