@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "WolfieGuard1Spawner.generated.h"
+#include "WolfieGuardSpawner.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HW1_API UWolfieGuard1Spawner : public UActorComponent
+class HW1_API UWolfieGuardSpawner : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UWolfieGuard1Spawner();
+	UWolfieGuardSpawner();
 
 protected:
 	// Called when the game starts
@@ -24,5 +24,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	void SpawnGuard();
+private:
+	FTimerHandle SpawnTimerHandle;
+	float SpawnInterval = 10.0f;
+	bool Guard1Spawned;
+	bool Guard2Spawned;
+	bool Guard3Spawned;
+	bool Guard4Spawned;
+	bool Guard5Spawned;
 };
